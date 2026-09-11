@@ -1,0 +1,6391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color"
+      content="#4f46e5">
+
+<meta name="description"
+      content="JoDico - dictionnaire français rapide, simple et hors connexion">
+
+<title>JoDico</title>
+
+<style>
+
+:root {
+    --primary: #4f46e5;
+    --primary-dark: #3730a3;
+    --primary-light: #eef2ff;
+
+    --background: #f6f7fb;
+    --surface: #ffffff;
+    --surface-2: #f1f3f9;
+
+    --text: #171923;
+    --text-light: #697386;
+
+    --border: #e3e6ef;
+
+    --success: #16a34a;
+    --danger: #dc2626;
+    --warning: #f59e0b;
+
+    --shadow:
+        0 8px 25px rgba(20, 20, 40, 0.08);
+
+    --radius: 18px;
+}
+
+body.dark {
+    --background: #0f1117;
+    --surface: #181b24;
+    --surface-2: #222632;
+
+    --text: #f4f5f7;
+    --text-light: #a6adbd;
+
+    --border: #303544;
+
+    --primary-light: #25284c;
+
+    --shadow:
+        0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--background);
+    color: var(--text);
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+    transition:
+        background 0.25s ease,
+        color 0.25s ease;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* =========================
+   ÉCRAN DE CHARGEMENT
+========================= */
+
+#loadingScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--background);
+}
+
+.loading-box {
+    width: min(90%, 380px);
+    text-align: center;
+}
+
+.logo-loader {
+    width: 76px;
+    height: 76px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            #7c3aed
+        );
+
+    color: white;
+
+    font-size: 36px;
+    font-weight: 900;
+
+    box-shadow: var(--shadow);
+}
+
+.loading-box h1 {
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+.loading-box p {
+    color: var(--text-light);
+    margin-bottom: 22px;
+}
+
+.loader {
+    width: 38px;
+    height: 38px;
+
+    margin: auto;
+
+    border: 4px solid var(--border);
+    border-top-color: var(--primary);
+
+    border-radius: 50%;
+
+    animation:
+        tourner 0.8s linear infinite;
+}
+
+@keyframes tourner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================
+   APPLICATION
+========================= */
+
+#app {
+    min-height: 100vh;
+}
+  /* =========================
+   HEADER
+========================= */
+
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    background: var(--surface);
+
+    border-bottom:
+        1px solid var(--border);
+
+    backdrop-filter: blur(12px);
+}
+
+.header-inner {
+    width: min(1100px, 100%);
+    min-height: 70px;
+
+    margin: auto;
+    padding: 12px 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    min-width: 0;
+}
+
+.brand-logo {
+    width: 43px;
+    height: 43px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            #7c3aed
+        );
+
+    color: white;
+
+    font-weight: 900;
+    font-size: 21px;
+}
+
+.brand-text {
+    min-width: 0;
+}
+
+.brand-text strong {
+    display: block;
+
+    font-size: 20px;
+    line-height: 1.1;
+}
+
+.brand-text span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--text-light);
+
+    font-size: 11px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.icon-button {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: var(--surface-2);
+    color: var(--text);
+
+    font-size: 19px;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+.icon-button:active {
+    transform: scale(0.92);
+}
+
+.icon-button:hover {
+    background: var(--primary-light);
+}
+
+/* =========================
+   CONTENU PRINCIPAL
+========================= */
+
+.main-container {
+    width: min(1100px, 100%);
+
+    margin: auto;
+
+    padding:
+        24px
+        18px
+        110px;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    padding: 26px 0 20px;
+}
+
+.hero h1 {
+    font-size: clamp(28px, 7vw, 42px);
+
+    line-height: 1.1;
+
+    margin-bottom: 10px;
+}
+
+.hero h1 span {
+    color: var(--primary);
+}
+
+.hero p {
+    color: var(--text-light);
+
+    max-width: 650px;
+
+    line-height: 1.6;
+}
+
+/* =========================
+   RECHERCHE
+========================= */
+
+.search-wrapper {
+    position: relative;
+
+    margin-top: 20px;
+}
+
+.search-box {
+    width: 100%;
+
+    min-height: 58px;
+
+    padding:
+        0
+        50px
+        0
+        50px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 17px;
+
+    outline: none;
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    box-shadow: var(--shadow);
+
+    font-size: 16px;
+
+    transition:
+        border 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.search-box:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 4px
+        rgba(79, 70, 229, 0.12);
+}
+
+.search-icon {
+    position: absolute;
+
+    left: 17px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: var(--text-light);
+
+    font-size: 20px;
+
+    pointer-events: none;
+}
+
+.clear-search {
+    position: absolute;
+
+    right: 10px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 11px;
+
+    background: var(--surface-2);
+    color: var(--text-light);
+
+    display: none;
+}
+
+.clear-search.show {
+    display: block;
+  }
+  /* =========================
+   STATISTIQUES
+========================= */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 10px;
+
+    margin-top: 18px;
+}
+
+.stat-card {
+    padding: 16px 12px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    background: var(--surface);
+
+    text-align: center;
+}
+
+.stat-icon {
+    font-size: 22px;
+
+    margin-bottom: 6px;
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.stat-label {
+    margin-top: 3px;
+
+    color: var(--text-light);
+
+    font-size: 11px;
+}
+
+/* =========================
+   TITRES DE SECTION
+========================= */
+
+.section-heading {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin:
+        28px 0
+        14px;
+}
+
+.section-heading h2 {
+    font-size: 21px;
+}
+
+.section-heading button {
+    background: transparent;
+    color: var(--primary);
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* =========================
+   CARTES MOT
+========================= */
+
+.word-list {
+    display: grid;
+    gap: 10px;
+}
+
+.word-card {
+    width: 100%;
+
+    padding: 17px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    text-align: left;
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    box-shadow:
+        0 4px 15px
+        rgba(0, 0, 0, 0.03);
+
+    transition:
+        transform 0.18s ease,
+        border 0.18s ease;
+}
+
+.word-card:hover {
+    border-color: var(--primary);
+}
+
+.word-card:active {
+    transform: scale(0.985);
+}
+
+.word-card-main {
+    min-width: 0;
+}
+
+.word-card-word {
+    font-size: 18px;
+    font-weight: 800;
+
+    margin-bottom: 5px;
+}
+
+.word-card-nature {
+    color: var(--text-light);
+
+    font-size: 12px;
+}
+
+.word-card-definition {
+    margin-top: 8px;
+
+    color: var(--text-light);
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+.word-card-arrow {
+    color: var(--primary);
+
+    font-size: 20px;
+
+    flex-shrink: 0;
+}
+
+/* =========================
+   MOT DU JOUR
+========================= */
+
+.daily-card {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 22px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            #7c3aed
+        );
+
+    color: white;
+
+    box-shadow: var(--shadow);
+}
+
+.daily-card::after {
+    content: "Aa";
+
+    position: absolute;
+
+    right: -8px;
+    bottom: -25px;
+
+    font-size: 130px;
+
+    font-weight: 900;
+
+    opacity: 0.08;
+}
+
+.daily-label {
+    font-size: 12px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+    opacity: 0.8;
+}
+
+.daily-word {
+    margin-top: 8px;
+
+    font-size: 32px;
+    font-weight: 900;
+}
+
+.daily-nature {
+    margin-top: 5px;
+
+    font-size: 13px;
+
+    opacity: 0.8;
+}
+
+.daily-definition {
+    margin-top: 14px;
+
+    line-height: 1.6;
+
+    max-width: 700px;
+}
+
+.daily-actions {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 18px;
+}
+
+.daily-actions button {
+    padding:
+        10px
+        14px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(255,255,255,0.16);
+
+    color: white;
+
+    font-weight: 700;
+  }
+  /* =========================
+   ACTIONS RAPIDES
+========================= */
+
+.quick-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 10px;
+}
+
+.quick-card {
+    min-height: 105px;
+
+    padding: 16px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    text-align: left;
+
+    transition:
+        transform 0.18s ease,
+        border 0.18s ease;
+}
+
+.quick-card:hover {
+    border-color: var(--primary);
+}
+
+.quick-card:active {
+    transform: scale(0.97);
+}
+
+.quick-icon {
+    font-size: 24px;
+
+    margin-bottom: 12px;
+}
+
+.quick-title {
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.quick-description {
+    margin-top: 4px;
+
+    color: var(--text-light);
+
+    font-size: 11px;
+
+    line-height: 1.4;
+}
+
+/* =========================
+   PAGE DÉFINITION
+========================= */
+
+.definition-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+}
+
+.back-button {
+    width: 43px;
+    height: 43px;
+
+    border-radius: 13px;
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    border:
+        1px solid var(--border);
+
+    font-size: 20px;
+}
+
+.definition-title-area {
+    min-width: 0;
+}
+
+.definition-word {
+    font-size: 30px;
+    font-weight: 900;
+
+    word-break: break-word;
+}
+
+.definition-nature {
+    margin-top: 4px;
+
+    color: var(--text-light);
+
+    font-size: 13px;
+}
+
+.definition-actions {
+    display: flex;
+
+    gap: 8px;
+
+    margin:
+        18px 0;
+}
+
+.action-button {
+    min-height: 42px;
+
+    padding:
+        0
+        14px;
+
+    border-radius: 12px;
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    border:
+        1px solid var(--border);
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+.action-button.primary {
+    background: var(--primary);
+
+    border-color: var(--primary);
+
+    color: white;
+}
+
+.action-button.favorite-active {
+    background: #fef3c7;
+
+    color: #b45309;
+
+    border-color: #fcd34d;
+}
+
+body.dark
+.action-button.favorite-active {
+    background: #422006;
+
+    color: #fbbf24;
+
+    border-color: #92400e;
+}
+
+/* =========================
+   BLOCS DE DÉFINITION
+========================= */
+
+.definition-section {
+    margin-top: 14px;
+
+    padding: 20px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    background: var(--surface);
+}
+
+.definition-section h3 {
+    margin-bottom: 10px;
+
+    font-size: 15px;
+}
+
+.definition-section p {
+    color: var(--text-light);
+
+    line-height: 1.7;
+
+    font-size: 14px;
+}
+
+.example-box {
+    padding: 16px;
+
+    border-left:
+        4px solid var(--primary);
+
+    border-radius: 10px;
+
+    background: var(--primary-light);
+
+    color: var(--text);
+
+    line-height: 1.7;
+
+    font-size: 14px;
+}
+
+.tags {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+.tag {
+    padding:
+        7px
+        10px;
+
+    border-radius: 10px;
+
+    background: var(--surface-2);
+
+    color: var(--text);
+
+    font-size: 12px;
+}
+
+/* =========================
+   RÉSULTATS
+========================= */
+
+.results-info {
+    margin:
+        15px 0 10px;
+
+    color: var(--text-light);
+
+    font-size: 13px;
+}
+
+.empty-state {
+    padding: 40px 20px;
+
+    text-align: center;
+
+    border:
+        1px dashed var(--border);
+
+    border-radius: var(--radius);
+
+    background: var(--surface);
+}
+
+.empty-icon {
+    font-size: 42px;
+
+    margin-bottom: 10px;
+}
+
+.empty-state h3 {
+    margin-bottom: 7px;
+}
+
+.empty-state p {
+    color: var(--text-light);
+
+    font-size: 13px;
+
+    line-height: 1.6;
+  }
+  /* =========================
+   ALPHABET
+========================= */
+
+.alphabet-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(6, 1fr);
+
+    gap: 8px;
+}
+
+.letter-button {
+    aspect-ratio: 1;
+
+    border-radius: 12px;
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    border:
+        1px solid var(--border);
+
+    font-weight: 800;
+
+    transition:
+        background 0.18s ease,
+        color 0.18s ease;
+}
+
+.letter-button:hover,
+.letter-button.active {
+    background: var(--primary);
+
+    color: white;
+
+    border-color: var(--primary);
+}
+
+.letter-title {
+    margin:
+        24px 0 12px;
+
+    font-size: 20px;
+}
+
+/* =========================
+   LISTE FAVORIS / HISTORIQUE
+========================= */
+
+.list-page {
+    display: grid;
+
+    gap: 10px;
+}
+
+.history-item {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding: 15px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    background: var(--surface);
+}
+
+.history-main {
+    min-width: 0;
+}
+
+.history-word {
+    font-weight: 800;
+
+    font-size: 16px;
+}
+
+.history-date {
+    margin-top: 4px;
+
+    color: var(--text-light);
+
+    font-size: 11px;
+}
+
+.small-button {
+    min-height: 38px;
+
+    padding:
+        0 11px;
+
+    border-radius: 10px;
+
+    background: var(--surface-2);
+
+    color: var(--text);
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+/* =========================
+   PARAMÈTRES
+========================= */
+
+.settings-list {
+    display: grid;
+
+    gap: 10px;
+}
+
+.setting-item {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 17px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    background: var(--surface);
+}
+
+.setting-info {
+    min-width: 0;
+}
+
+.setting-title {
+    font-size: 15px;
+
+    font-weight: 800;
+}
+
+.setting-description {
+    margin-top: 4px;
+
+    color: var(--text-light);
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+.toggle {
+    position: relative;
+
+    width: 50px;
+    height: 28px;
+
+    flex-shrink: 0;
+
+    border-radius: 20px;
+
+    background: var(--border);
+
+    transition:
+        background 0.2s ease;
+}
+
+.toggle::after {
+    content: "";
+
+    position: absolute;
+
+    top: 4px;
+    left: 4px;
+
+    width: 20px;
+    height: 20px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    transition:
+        transform 0.2s ease;
+}
+
+.toggle.active {
+    background: var(--primary);
+}
+
+.toggle.active::after {
+    transform: translateX(22px);
+}
+
+.danger-button {
+    width: 100%;
+
+    min-height: 48px;
+
+    margin-top: 8px;
+
+    border-radius: 13px;
+
+    background:
+        rgba(220, 38, 38, 0.1);
+
+    color: var(--danger);
+
+    font-weight: 800;
+}
+
+/* =========================
+   NAVIGATION BASSE
+========================= */
+
+.bottom-nav {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    z-index: 200;
+
+    padding:
+        8px
+        max(
+            10px,
+            env(safe-area-inset-bottom)
+        );
+
+    background:
+        rgba(255,255,255,0.94);
+
+    border-top:
+        1px solid var(--border);
+
+    backdrop-filter: blur(14px);
+}
+
+body.dark .bottom-nav {
+    background:
+        rgba(24,27,36,0.94);
+}
+
+.bottom-nav-inner {
+    width: min(600px, 100%);
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    gap: 3px;
+}
+
+.nav-item {
+    min-height: 58px;
+
+    border-radius: 13px;
+
+    background: transparent;
+
+    color: var(--text-light);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 3px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+}
+
+.nav-item-icon {
+    font-size: 19px;
+}
+
+.nav-item.active {
+    background: var(--primary-light);
+
+    color: var(--primary);
+  }
+  /* =========================
+   TOAST
+========================= */
+
+#toast {
+    position: fixed;
+
+    left: 50%;
+    bottom: 82px;
+
+    z-index: 500;
+
+    width: min(
+        calc(100% - 30px),
+        420px
+    );
+
+    transform:
+        translate(-50%, 20px);
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 13px 15px;
+
+    border-radius: 14px;
+
+    background: #20232d;
+
+    color: white;
+
+    box-shadow: var(--shadow);
+
+    font-size: 13px;
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+
+#toast.show {
+    opacity: 1;
+
+    transform:
+        translate(-50%, 0);
+}
+
+#toastIcon {
+    font-size: 18px;
+}
+
+#toastMessage {
+    flex: 1;
+}
+
+/* =========================
+   BOUTON RETOUR EN HAUT
+========================= */
+
+.scroll-top {
+    position: fixed;
+
+    right: 18px;
+    bottom: 145px;
+
+    z-index: 150;
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 50%;
+
+    background: var(--primary);
+
+    color: white;
+
+    box-shadow: var(--shadow);
+
+    display: none;
+}
+
+.scroll-top.show {
+    display: block;
+}
+
+/* =========================
+   VERSION DESKTOP
+========================= */
+
+@media (min-width: 700px) {
+
+    .main-container {
+        padding-top: 35px;
+    }
+
+    .quick-grid {
+        grid-template-columns:
+            repeat(4, 1fr);
+    }
+
+    .stats-grid {
+        gap: 15px;
+    }
+
+    .word-list {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .bottom-nav {
+        left: 50%;
+
+        right: auto;
+
+        width: min(600px, 100%);
+
+        transform:
+            translateX(-50%);
+
+        border:
+            1px solid var(--border);
+
+        border-bottom: none;
+
+        border-radius:
+            18px 18px 0 0;
+    }
+}
+
+@media (min-width: 950px) {
+
+    .main-container {
+        padding-left: 25px;
+        padding-right: 25px;
+    }
+
+    .hero {
+        padding-top: 40px;
+    }
+
+    .word-list {
+        grid-template-columns:
+            repeat(3, 1fr);
+    }
+
+    .quick-grid {
+        grid-template-columns:
+            repeat(4, 1fr);
+    }
+}
+
+/* =========================
+   PETITS ÉCRANS
+========================= */
+
+@media (max-width: 360px) {
+
+    .header-inner {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .main-container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .brand-text span {
+        display: none;
+    }
+
+    .stats-grid {
+        gap: 6px;
+    }
+
+    .stat-card {
+        padding:
+            13px 7px;
+    }
+
+    .alphabet-grid {
+        grid-template-columns:
+            repeat(5, 1fr);
+    }
+}
+  </style>
+</head>
+
+<body>
+
+<!-- =========================
+     CHARGEMENT
+========================= -->
+
+<div id="loadingScreen">
+
+    <div class="loading-box">
+
+        <div class="logo-loader">
+            J
+        </div>
+
+        <h1>JoDico</h1>
+
+        <p>
+            Préparation de ton dictionnaire...
+        </p>
+
+        <div class="loader"></div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     APPLICATION
+========================= -->
+
+<div id="app" class="hidden">
+
+    <!-- HEADER -->
+
+    <header class="app-header">
+
+        <div class="header-inner">
+
+            <div class="brand">
+
+                <div class="brand-logo">
+                    J
+                </div>
+
+                <div class="brand-text">
+
+                    <strong>
+                        JoDico
+                    </strong>
+
+                    <span>
+                        Ton dictionnaire français
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="header-actions">
+
+                <button
+                    class="icon-button"
+                    id="themeButton"
+                    type="button"
+                    aria-label="Changer le thème">
+                    🌙
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENU -->
+
+    <main class="main-container">
+
+        <!-- PAGE ACCUEIL -->
+
+        <section
+            id="homePage"
+            class="page active">
+
+            <div class="hero">
+
+                <h1>
+                    Cherche un
+                    <span>mot.</span>
+                </h1>
+
+                <p>
+                    Découvre rapidement sa définition,
+                    sa nature, son exemple et sa
+                    prononciation.
+                </p>
+
+                <div class="search-wrapper">
+
+                    <span class="search-icon">
+                        🔎
+                    </span>
+
+                    <input
+                        id="searchInput"
+                        class="search-box"
+                        type="search"
+                        autocomplete="off"
+                        placeholder="Rechercher un mot..."
+                        aria-label="Rechercher un mot">
+
+                    <button
+                        id="clearSearch"
+                        class="clear-search"
+                        type="button"
+                        aria-label="Effacer la recherche">
+                        ✕
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATISTIQUES -->
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        📚
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="wordCount">
+                        0
+                    </div>
+
+                    <div class="stat-label">
+                        mots
+                    </div>
+
+                </div>
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        ❤️
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="favoriteCount">
+                        0
+                    </div>
+
+                    <div class="stat-label">
+                        favoris
+                    </div>
+
+                </div>
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🕘
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="historyCount">
+                        0
+                    </div>
+
+                    <div class="stat-label">
+                        recherches
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RÉSULTATS -->
+
+            <div id="searchArea">
+
+                <div
+                    class="results-info hidden"
+                    id="resultsInfo">
+                </div>
+
+                <div
+                    class="word-list"
+                    id="searchResults">
+                </div>
+
+            </div>
+                        <!-- MOT DU JOUR -->
+
+            <div class="section-heading">
+
+                <h2>
+                    Mot du jour
+                </h2>
+
+            </div>
+
+            <div
+                class="daily-card"
+                id="dailyWord">
+
+                <div class="daily-label">
+                    Aujourd'hui
+                </div>
+
+                <div
+                    class="daily-word"
+                    id="dailyWordText">
+                    —
+                </div>
+
+                <div
+                    class="daily-nature"
+                    id="dailyWordNature">
+                    —
+                </div>
+
+                <div
+                    class="daily-definition"
+                    id="dailyWordDefinition">
+                    Chargement...
+                </div>
+
+                <div class="daily-actions">
+
+                    <button
+                        id="dailyOpenButton"
+                        type="button">
+                        📖 Voir le mot
+                    </button>
+
+                    <button
+                        id="randomWordButton"
+                        type="button">
+                        🎲 Mot aléatoire
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS RAPIDES -->
+
+            <div class="section-heading">
+
+                <h2>
+                    Accès rapide
+                </h2>
+
+            </div>
+
+            <div class="quick-grid">
+
+                <button
+                    class="quick-card"
+                    data-page="favorites"
+                    type="button">
+
+                    <div class="quick-icon">
+                        ❤️
+                    </div>
+
+                    <div class="quick-title">
+                        Mes favoris
+                    </div>
+
+                    <div class="quick-description">
+                        Retrouve les mots que tu
+                        as enregistrés.
+                    </div>
+
+                </button>
+
+
+                <button
+                    class="quick-card"
+                    data-page="history"
+                    type="button">
+
+                    <div class="quick-icon">
+                        🕘
+                    </div>
+
+                    <div class="quick-title">
+                        Historique
+                    </div>
+
+                    <div class="quick-description">
+                        Consulte tes dernières
+                        recherches.
+                    </div>
+
+                </button>
+
+
+                <button
+                    class="quick-card"
+                    data-page="letters"
+                    type="button">
+
+                    <div class="quick-icon">
+                        🔤
+                    </div>
+
+                    <div class="quick-title">
+                        Alphabet
+                    </div>
+
+                    <div class="quick-description">
+                        Explore les mots lettre
+                        par lettre.
+                    </div>
+
+                </button>
+
+
+                <button
+                    class="quick-card"
+                    data-page="settings"
+                    type="button">
+
+                    <div class="quick-icon">
+                        ⚙️
+                    </div>
+
+                    <div class="quick-title">
+                        Paramètres
+                    </div>
+
+                    <div class="quick-description">
+                        Personnalise ton
+                        expérience JoDico.
+                    </div>
+
+                </button>
+
+            </div>
+
+        </section>
+                <!-- =========================
+             PAGE FAVORIS
+        ========================= -->
+
+        <section
+            id="favoritesPage"
+            class="page">
+
+            <div class="section-heading">
+
+                <h2>
+                    ❤️ Mes favoris
+                </h2>
+
+                <button
+                    id="goHomeFromFavorites"
+                    type="button">
+                    Accueil
+                </button>
+
+            </div>
+
+            <div
+                id="favoritesList"
+                class="list-page">
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PAGE HISTORIQUE
+        ========================= -->
+
+        <section
+            id="historyPage"
+            class="page">
+
+            <div class="section-heading">
+
+                <h2>
+                    🕘 Historique
+                </h2>
+
+                <button
+                    id="clearHistoryButton"
+                    type="button">
+                    Effacer
+                </button>
+
+            </div>
+
+            <div
+                id="historyList"
+                class="list-page">
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PAGE ALPHABET
+        ========================= -->
+
+        <section
+            id="lettersPage"
+            class="page">
+
+            <div class="section-heading">
+
+                <h2>
+                    🔤 Alphabet
+                </h2>
+
+            </div>
+
+            <div
+                id="alphabetGrid"
+                class="alphabet-grid">
+            </div>
+
+            <h3
+                id="letterTitle"
+                class="letter-title">
+                Choisis une lettre
+            </h3>
+
+            <div
+                id="letterWords"
+                class="word-list">
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PAGE PARAMÈTRES
+        ========================= -->
+
+        <section
+            id="settingsPage"
+            class="page">
+
+            <div class="section-heading">
+
+                <h2>
+                    ⚙️ Paramètres
+                </h2>
+
+            </div>
+
+            <div class="settings-list">
+                <div class="setting-item">
+
+                    <div class="setting-info">
+
+                        <div class="setting-title">
+                            Mode sombre
+                        </div>
+
+                        <div class="setting-description">
+                            Utilise une interface sombre
+                            plus confortable la nuit.
+                        </div>
+
+                    </div>
+
+                    <button
+                        id="darkToggle"
+                        class="toggle"
+                        type="button"
+                        aria-label="Activer le mode sombre">
+                    </button>
+
+                </div>
+
+
+                <div class="setting-item">
+
+                    <div class="setting-info">
+
+                        <div class="setting-title">
+                            Prononciation
+                        </div>
+
+                        <div class="setting-description">
+                            Utilise la voix française
+                            disponible sur ton téléphone.
+                        </div>
+
+                    </div>
+
+                    <button
+                        id="soundToggle"
+                        class="toggle active"
+                        type="button"
+                        aria-label="Activer la prononciation">
+                    </button>
+
+                </div>
+
+
+                <div class="setting-item">
+
+                    <div class="setting-info">
+
+                        <div class="setting-title">
+                            Dictionnaire hors connexion
+                        </div>
+
+                        <div class="setting-description">
+                            Les données principales sont
+                            intégrées directement à JoDico.
+                        </div>
+
+                    </div>
+
+                    <span
+                        style="
+                            font-size:24px;
+                        ">
+                        🟢
+                    </span>
+
+                </div>
+
+
+                <button
+                    id="resetButton"
+                    class="danger-button"
+                    type="button">
+
+                    🗑️ Réinitialiser mes données
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PAGE À PROPOS
+        ========================= -->
+
+        <section
+            id="aboutPage"
+            class="page">
+
+            <div class="section-heading">
+
+                <h2>
+                    ℹ️ À propos de JoDico
+                </h2>
+
+            </div>
+
+            <div class="definition-section">
+
+                <h3>
+                    JoDico
+                </h3>
+
+                <p>
+                    JoDico est un dictionnaire français
+                    conçu pour permettre une recherche
+                    rapide des mots, même sans connexion
+                    Internet.
+                </p>
+
+            </div>
+
+            <div class="definition-section">
+
+                <h3>
+                    Fonctionnalités
+                </h3>
+
+                <div class="tags">
+
+                    <span class="tag">
+                        🔎 Recherche
+                    </span>
+
+                    <span class="tag">
+                        📖 Définitions
+                    </span>
+
+                    <span class="tag">
+                        ❤️ Favoris
+                    </span>
+
+                    <span class="tag">
+                        🕘 Historique
+                    </span>
+
+                    <span class="tag">
+                        🔤 Alphabet
+                    </span>
+
+                    <span class="tag">
+                        🔊 Prononciation
+                    </span>
+
+                    <span class="tag">
+                        🌙 Mode sombre
+                    </span>
+
+                    <span class="tag">
+                        📱 Mobile
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="definition-section">
+
+                <h3>
+                    Version
+                </h3>
+
+                <p>
+                    JoDico 1.0.0
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PAGE DÉFINITION
+        ========================= -->
+
+        <section
+            id="definitionPage"
+            class="page">
+
+            <div class="definition-header">
+
+                <button
+                    id="backFromDefinition"
+                    class="back-button"
+                    type="button"
+                    aria-label="Retour">
+                    ←
+                </button>
+
+                <div
+                    class="definition-title-area">
+
+                    <div
+                        id="definitionWord"
+                        class="definition-word">
+                        —
+                    </div>
+
+                    <div
+                        id="definitionNature"
+                        class="definition-nature">
+                        —
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div
+                id="definitionActions"
+                class="definition-actions">
+            </div>
+
+            <div
+                id="definitionContent">
+            </div>
+
+        </section>
+          </main>
+
+
+    <!-- =========================
+         NAVIGATION
+    ========================= -->
+
+    <nav class="bottom-nav">
+
+        <div class="bottom-nav-inner">
+
+            <button
+                class="nav-item active"
+                data-page="home"
+                type="button">
+
+                <span class="nav-item-icon">
+                    🏠
+                </span>
+
+                Accueil
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="favorites"
+                type="button">
+
+                <span class="nav-item-icon">
+                    ❤️
+                </span>
+
+                Favoris
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="history"
+                type="button">
+
+                <span class="nav-item-icon">
+                    🕘
+                </span>
+
+                Historique
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="letters"
+                type="button">
+
+                <span class="nav-item-icon">
+                    🔤
+                </span>
+
+                Alphabet
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="settings"
+                type="button">
+
+                <span class="nav-item-icon">
+                    ⚙️
+                </span>
+
+                Réglages
+
+            </button>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================
+         TOAST
+    ========================= -->
+
+    <div
+        id="toast"
+        role="status"
+        aria-live="polite">
+
+        <span id="toastIcon">
+            ℹ️
+        </span>
+
+        <span id="toastMessage">
+            —
+        </span>
+
+    </div>
+
+
+    <button
+        id="scrollTopButton"
+        class="scroll-top"
+        type="button"
+        aria-label="Retour en haut">
+
+        ↑
+
+    </button>
+
+</div>
+
+
+<script>
+
+"use strict";
+
+/* =========================
+   CONFIGURATION
+========================= */
+
+const JODICO_VERSION = "1.0.0";
+
+const STORAGE_KEYS = {
+
+    favorites: "jodico_favorites",
+
+    history: "jodico_history",
+
+    theme: "jodico_theme",
+
+    sound: "jodico_sound"
+
+};
+  /* =========================
+   OUTILS DE STOCKAGE
+========================= */
+
+function lireStockage(
+    cle,
+    valeurParDefaut
+) {
+
+    try {
+
+        const valeur =
+            localStorage.getItem(cle);
+
+        if (
+            valeur === null ||
+            valeur === ""
+        ) {
+            return valeurParDefaut;
+        }
+
+        return JSON.parse(valeur);
+
+    } catch (erreur) {
+
+        console.warn(
+            "Lecture localStorage impossible:",
+            erreur
+        );
+
+        return valeurParDefaut;
+    }
+}
+
+
+function ecrireStockage(
+    cle,
+    valeur
+) {
+
+    try {
+
+        localStorage.setItem(
+            cle,
+            JSON.stringify(valeur)
+        );
+
+        return true;
+
+    } catch (erreur) {
+
+        console.warn(
+            "Écriture localStorage impossible:",
+            erreur
+        );
+
+        return false;
+    }
+}
+
+
+/* =========================
+   NORMALISATION
+========================= */
+
+function normaliser(texte) {
+
+    return String(texte ?? "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .trim();
+}
+
+
+/* =========================
+   SÉCURISATION HTML
+========================= */
+
+function echapper(texte) {
+
+    return String(texte ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+/* =========================
+   ÉTAT DE L'APPLICATION
+========================= */
+
+let favoris =
+    lireStockage(
+        STORAGE_KEYS.favorites,
+        []
+    );
+
+let historique =
+    lireStockage(
+        STORAGE_KEYS.history,
+        []
+    );
+
+let theme =
+    lireStockage(
+        STORAGE_KEYS.theme,
+        "light"
+    );
+
+let sonActive =
+    lireStockage(
+        STORAGE_KEYS.sound,
+        true
+    );
+
+let motActuel = null;
+
+let pageActuelle = "home";
+
+let toastTimer = null;
+  /* =========================
+   DICTIONNAIRE
+========================= */
+
+const dictionnaire = [
+
+    {
+        mot: "abandon",
+        nature: "nom masculin",
+        definition:
+            "Action de quitter ou de laisser quelque chose ou quelqu'un.",
+        exemple:
+            "Son abandon de l'école a surpris tout le monde.",
+        prononciation: "abandon",
+        synonymes: [
+            "départ",
+            "renoncement"
+        ],
+        contraires: [
+            "présence",
+            "engagement"
+        ]
+    },
+
+    {
+        mot: "abriter",
+        nature: "verbe",
+        definition:
+            "Mettre quelqu'un ou quelque chose à l'abri.",
+        exemple:
+            "La maison peut abriter toute la famille.",
+        prononciation: "abriter",
+        synonymes: [
+            "protéger",
+            "couvrir"
+        ],
+        contraires: [
+            "exposer"
+        ]
+    },
+
+    {
+        mot: "accepter",
+        nature: "verbe",
+        definition:
+            "Donner son accord à quelque chose.",
+        exemple:
+            "J'accepte ta proposition.",
+        prononciation: "accepter",
+        synonymes: [
+            "consentir",
+            "admettre"
+        ],
+        contraires: [
+            "refuser"
+        ]
+    },
+
+    {
+        mot: "action",
+        nature: "nom féminin",
+        definition:
+            "Fait de faire quelque chose ou résultat de cette activité.",
+        exemple:
+            "Il faut passer à l'action.",
+        prononciation: "action",
+        synonymes: [
+            "activité",
+            "opération"
+        ],
+        contraires: [
+            "inaction"
+        ]
+    },
+
+    {
+        mot: "admirable",
+        nature: "adjectif",
+        definition:
+            "Qui mérite l'admiration.",
+        exemple:
+            "Son courage est admirable.",
+        prononciation: "admirable",
+        synonymes: [
+            "remarquable",
+            "magnifique"
+        ],
+        contraires: [
+            "méprisable"
+        ]
+    },
+
+    {
+        mot: "admirer",
+        nature: "verbe",
+        definition:
+            "Regarder avec beaucoup d'estime ou d'émerveillement.",
+        exemple:
+            "J'aime admirer le paysage.",
+        prononciation: "admirer",
+        synonymes: [
+            "apprécier",
+            "contempler"
+        ],
+        contraires: [
+            "mépriser"
+        ]
+    },
+
+    {
+        mot: "ami",
+        nature: "nom masculin",
+        definition:
+            "Personne avec laquelle on entretient une relation d'affection et de confiance.",
+        exemple:
+            "Mon ami m'a aidé.",
+        prononciation: "ami",
+        synonymes: [
+            "compagnon",
+            "camarade"
+        ],
+        contraires: [
+            "ennemi"
+        ]
+    },
+
+    {
+        mot: "amour",
+        nature: "nom masculin",
+        definition:
+            "Sentiment profond d'affection, d'attachement ou de tendresse.",
+        exemple:
+            "L'amour unit les personnes.",
+        prononciation: "amour",
+        synonymes: [
+            "affection",
+            "tendresse"
+        ],
+        contraires: [
+            "haine"
+        ]
+    },
+
+    {
+        mot: "apprendre",
+        nature: "verbe",
+        definition:
+            "Acquérir des connaissances ou des compétences.",
+        exemple:
+            "Je veux apprendre l'informatique.",
+        prononciation: "apprendre",
+        synonymes: [
+            "étudier",
+            "assimiler"
+        ],
+        contraires: [
+            "oublier"
+        ]
+    },
+
+    {
+        mot: "arbre",
+        nature: "nom masculin",
+        definition:
+            "Grande plante possédant généralement un tronc et des branches.",
+        exemple:
+            "L'arbre donne de l'ombre.",
+        prononciation: "arbre",
+        synonymes: [
+            "végétal"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "argent",
+        nature: "nom masculin",
+        definition:
+            "Moyen de paiement utilisé pour acheter des biens et des services.",
+        exemple:
+            "Il économise son argent.",
+        prononciation: "argent",
+        synonymes: [
+            "monnaie",
+            "fonds"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "arriver",
+        nature: "verbe",
+        definition:
+            "Atteindre un lieu ou parvenir à un résultat.",
+        exemple:
+            "Nous allons arriver bientôt.",
+        prononciation: "arriver",
+        synonymes: [
+            "parvenir",
+            "atteindre"
+        ],
+        contraires: [
+            "partir"
+        ]
+    },
+
+    {
+        mot: "avenir",
+        nature: "nom masculin",
+        definition:
+            "Temps qui vient après le présent.",
+        exemple:
+            "Il pense beaucoup à son avenir.",
+        prononciation: "avenir",
+        synonymes: [
+            "futur",
+            "demain"
+        ],
+        contraires: [
+            "passé"
+        ]
+    },
+      {
+        mot: "beau",
+        nature: "adjectif",
+        definition:
+            "Qui plaît par son aspect, sa forme ou ses qualités.",
+        exemple:
+            "C'est un beau paysage.",
+        prononciation: "beau",
+        synonymes: [
+            "joli",
+            "magnifique"
+        ],
+        contraires: [
+            "laid"
+        ]
+    },
+
+    {
+        mot: "besoin",
+        nature: "nom masculin",
+        definition:
+            "Nécessité de quelque chose.",
+        exemple:
+            "J'ai besoin de repos.",
+        prononciation: "besoin",
+        synonymes: [
+            "nécessité",
+            "demande"
+        ],
+        contraires: [
+            "suffisance"
+        ]
+    },
+
+    {
+        mot: "bon",
+        nature: "adjectif",
+        definition:
+            "Qui possède les qualités attendues ou souhaitées.",
+        exemple:
+            "C'est un bon étudiant.",
+        prononciation: "bon",
+        synonymes: [
+            "excellent",
+            "correct"
+        ],
+        contraires: [
+            "mauvais"
+        ]
+    },
+
+    {
+        mot: "bonjour",
+        nature: "interjection",
+        definition:
+            "Formule utilisée pour saluer quelqu'un.",
+        exemple:
+            "Bonjour, comment vas-tu ?",
+        prononciation: "bonjour",
+        synonymes: [
+            "salut"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "chemin",
+        nature: "nom masculin",
+        definition:
+            "Voie permettant de se déplacer d'un endroit à un autre.",
+        exemple:
+            "Nous suivons le chemin.",
+        prononciation: "chemin",
+        synonymes: [
+            "route",
+            "voie"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "choisir",
+        nature: "verbe",
+        definition:
+            "Prendre une décision parmi plusieurs possibilités.",
+        exemple:
+            "Je dois choisir un livre.",
+        prononciation: "choisir",
+        synonymes: [
+            "sélectionner",
+            "opter"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "classe",
+        nature: "nom féminin",
+        definition:
+            "Groupe d'élèves réunis pour recevoir un enseignement.",
+        exemple:
+            "La classe commence à huit heures.",
+        prononciation: "classe",
+        synonymes: [
+            "groupe"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "comprendre",
+        nature: "verbe",
+        definition:
+            "Saisir le sens ou la nature de quelque chose.",
+        exemple:
+            "Je comprends cette leçon.",
+        prononciation: "comprendre",
+        synonymes: [
+            "saisir",
+            "assimiler"
+        ],
+        contraires: [
+            "ignorer"
+        ]
+    },
+
+    {
+        mot: "confiance",
+        nature: "nom féminin",
+        definition:
+            "Sentiment qui permet de croire en quelqu'un ou quelque chose.",
+        exemple:
+            "J'ai confiance en mon ami.",
+        prononciation: "confiance",
+        synonymes: [
+            "assurance",
+            "foi"
+        ],
+        contraires: [
+            "méfiance"
+        ]
+    },
+
+    {
+        mot: "connaître",
+        nature: "verbe",
+        definition:
+            "Avoir une connaissance ou une expérience de quelque chose ou quelqu'un.",
+        exemple:
+            "Je connais cette ville.",
+        prononciation: "connaître",
+        synonymes: [
+            "savoir",
+            "identifier"
+        ],
+        contraires: [
+            "ignorer"
+        ]
+    },
+
+    {
+        mot: "courage",
+        nature: "nom masculin",
+        definition:
+            "Force morale permettant d'affronter une difficulté ou un danger.",
+        exemple:
+            "Il a montré beaucoup de courage.",
+        prononciation: "courage",
+        synonymes: [
+            "bravoure",
+            "audace"
+        ],
+        contraires: [
+            "lâcheté"
+        ]
+    },
+
+    {
+        mot: "courir",
+        nature: "verbe",
+        definition:
+            "Se déplacer rapidement en utilisant ses jambes.",
+        exemple:
+            "Les enfants aiment courir.",
+        prononciation: "courir",
+        synonymes: [
+            "galoper"
+        ],
+        contraires: [
+            "marcher"
+        ]
+    },
+      {
+        mot: "créer",
+        nature: "verbe",
+        definition:
+            "Faire apparaître ou produire quelque chose qui n'existait pas auparavant.",
+        exemple:
+            "Je veux créer une application.",
+        prononciation: "créer",
+        synonymes: [
+            "produire",
+            "concevoir"
+        ],
+        contraires: [
+            "détruire"
+        ]
+    },
+
+    {
+        mot: "danger",
+        nature: "nom masculin",
+        definition:
+            "Situation dans laquelle une personne ou une chose risque de subir un dommage.",
+        exemple:
+            "Cette route présente un danger.",
+        prononciation: "danger",
+        synonymes: [
+            "risque",
+            "menace"
+        ],
+        contraires: [
+            "sécurité"
+        ]
+    },
+
+    {
+        mot: "découvrir",
+        nature: "verbe",
+        definition:
+            "Trouver ou apprendre quelque chose que l'on ne connaissait pas.",
+        exemple:
+            "J'ai découvert un nouveau mot.",
+        prononciation: "découvrir",
+        synonymes: [
+            "trouver",
+            "explorer"
+        ],
+        contraires: [
+            "cacher"
+        ]
+    },
+
+    {
+        mot: "demander",
+        nature: "verbe",
+        definition:
+            "Chercher à obtenir une information ou quelque chose.",
+        exemple:
+            "Je vais demander de l'aide.",
+        prononciation: "demander",
+        synonymes: [
+            "solliciter",
+            "questionner"
+        ],
+        contraires: [
+            "répondre"
+        ]
+    },
+
+    {
+        mot: "développer",
+        nature: "verbe",
+        definition:
+            "Faire grandir, progresser ou améliorer quelque chose.",
+        exemple:
+            "Il veut développer une application.",
+        prononciation: "développer",
+        synonymes: [
+            "améliorer",
+            "faire grandir"
+        ],
+        contraires: [
+            "réduire"
+        ]
+    },
+
+    {
+        mot: "difficile",
+        nature: "adjectif",
+        definition:
+            "Qui demande beaucoup d'efforts ou présente des obstacles.",
+        exemple:
+            "Cette question est difficile.",
+        prononciation: "difficile",
+        synonymes: [
+            "compliqué",
+            "dur"
+        ],
+        contraires: [
+            "facile"
+        ]
+    },
+
+    {
+        mot: "donner",
+        nature: "verbe",
+        definition:
+            "Faire passer quelque chose à quelqu'un.",
+        exemple:
+            "Je vais donner mon livre à mon ami.",
+        prononciation: "donner",
+        synonymes: [
+            "offrir",
+            "remettre"
+        ],
+        contraires: [
+            "prendre"
+        ]
+    },
+
+    {
+        mot: "école",
+        nature: "nom féminin",
+        definition:
+            "Établissement où l'on reçoit un enseignement.",
+        exemple:
+            "Les élèves vont à l'école.",
+        prononciation: "école",
+        synonymes: [
+            "établissement"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "écouter",
+        nature: "verbe",
+        definition:
+            "Prêter attention à un son ou aux paroles de quelqu'un.",
+        exemple:
+            "Écoute bien la question.",
+        prononciation: "écouter",
+        synonymes: [
+            "entendre",
+            "prêter attention"
+        ],
+        contraires: [
+            "ignorer"
+        ]
+    },
+
+    {
+        mot: "écrire",
+        nature: "verbe",
+        definition:
+            "Tracer des signes ou des mots pour communiquer une information.",
+        exemple:
+            "J'aime écrire des histoires.",
+        prononciation: "écrire",
+        synonymes: [
+            "rédiger",
+            "noter"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "effort",
+        nature: "nom masculin",
+        definition:
+            "Énergie physique ou mentale dépensée pour atteindre un objectif.",
+        exemple:
+            "La réussite demande des efforts.",
+        prononciation: "effort",
+        synonymes: [
+            "travail",
+            "application"
+        ],
+        contraires: [
+            "paresse"
+        ]
+    },
+      {
+        mot: "enfant",
+        nature: "nom masculin",
+        definition:
+            "Jeune être humain qui n'est pas encore adulte.",
+        exemple:
+            "Cet enfant aime apprendre.",
+        prononciation: "enfant",
+        synonymes: [
+            "jeune"
+        ],
+        contraires: [
+            "adulte"
+        ]
+    },
+
+    {
+        mot: "enseigner",
+        nature: "verbe",
+        definition:
+            "Transmettre des connaissances ou des compétences.",
+        exemple:
+            "Le professeur enseigne l'informatique.",
+        prononciation: "enseigner",
+        synonymes: [
+            "instruire",
+            "former"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "entrer",
+        nature: "verbe",
+        definition:
+            "Passer de l'extérieur vers l'intérieur d'un lieu.",
+        exemple:
+            "Tu peux entrer dans la salle.",
+        prononciation: "entrer",
+        synonymes: [
+            "pénétrer"
+        ],
+        contraires: [
+            "sortir"
+        ]
+    },
+
+    {
+        mot: "erreur",
+        nature: "nom féminin",
+        definition:
+            "Action ou résultat qui ne correspond pas à ce qui est correct.",
+        exemple:
+            "J'ai trouvé une erreur dans le code.",
+        prononciation: "erreur",
+        synonymes: [
+            "faute",
+            "inexactitude"
+        ],
+        contraires: [
+            "exactitude"
+        ]
+    },
+
+    {
+        mot: "étudier",
+        nature: "verbe",
+        definition:
+            "Apprendre en consacrant du temps à l'acquisition de connaissances.",
+        exemple:
+            "J'étudie chaque soir.",
+        prononciation: "étudier",
+        synonymes: [
+            "apprendre",
+            "réviser"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "facile",
+        nature: "adjectif",
+        definition:
+            "Qui ne demande pas beaucoup d'efforts.",
+        exemple:
+            "Cette leçon est facile.",
+        prononciation: "facile",
+        synonymes: [
+            "simple",
+            "aisé"
+        ],
+        contraires: [
+            "difficile"
+        ]
+    },
+
+    {
+        mot: "famille",
+        nature: "nom féminin",
+        definition:
+            "Ensemble de personnes liées notamment par la parenté.",
+        exemple:
+            "Ma famille habite ici.",
+        prononciation: "famille",
+        synonymes: [
+            "parenté"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "femme",
+        nature: "nom féminin",
+        definition:
+            "Personne humaine adulte de sexe féminin.",
+        exemple:
+            "Cette femme travaille beaucoup.",
+        prononciation: "femme",
+        synonymes: [
+            "adulte"
+        ],
+        contraires: [
+            "homme"
+        ]
+    },
+
+    {
+        mot: "fort",
+        nature: "adjectif",
+        definition:
+            "Qui possède beaucoup de force ou présente une grande intensité.",
+        exemple:
+            "Il est très fort.",
+        prononciation: "fort",
+        synonymes: [
+            "puissant",
+            "robuste"
+        ],
+        contraires: [
+            "faible"
+        ]
+    },
+
+    {
+        mot: "gagner",
+        nature: "verbe",
+        definition:
+            "Obtenir un avantage, une victoire ou un bénéfice.",
+        exemple:
+            "Il veut gagner le concours.",
+        prononciation: "gagner",
+        synonymes: [
+            "remporter",
+            "obtenir"
+        ],
+        contraires: [
+            "perdre"
+        ]
+    },
+      {
+        mot: "grand",
+        nature: "adjectif",
+        definition:
+            "Qui possède une dimension importante ou une grande importance.",
+        exemple:
+            "Il habite dans une grande maison.",
+        prononciation: "grand",
+        synonymes: [
+            "vaste",
+            "important"
+        ],
+        contraires: [
+            "petit"
+        ]
+    },
+
+    {
+        mot: "homme",
+        nature: "nom masculin",
+        definition:
+            "Être humain adulte de sexe masculin.",
+        exemple:
+            "Cet homme est professeur.",
+        prononciation: "homme",
+        synonymes: [
+            "adulte"
+        ],
+        contraires: [
+            "femme"
+        ]
+    },
+
+    {
+        mot: "idée",
+        nature: "nom féminin",
+        definition:
+            "Représentation mentale ou pensée concernant quelque chose.",
+        exemple:
+            "J'ai une bonne idée.",
+        prononciation: "idée",
+        synonymes: [
+            "pensée",
+            "concept"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "important",
+        nature: "adjectif",
+        definition:
+            "Qui a beaucoup d'importance ou de valeur.",
+        exemple:
+            "L'éducation est importante.",
+        prononciation: "important",
+        synonymes: [
+            "essentiel",
+            "considérable"
+        ],
+        contraires: [
+            "insignifiant"
+        ]
+    },
+
+    {
+        mot: "jouer",
+        nature: "verbe",
+        definition:
+            "Participer à un jeu ou pratiquer une activité ludique.",
+        exemple:
+            "Les enfants aiment jouer.",
+        prononciation: "jouer",
+        synonymes: [
+            "s'amuser"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "jour",
+        nature: "nom masculin",
+        definition:
+            "Période de vingt-quatre heures ou période où il fait clair.",
+        exemple:
+            "Je travaille chaque jour.",
+        prononciation: "jour",
+        synonymes: [
+            "journée"
+        ],
+        contraires: [
+            "nuit"
+        ]
+    },
+
+    {
+        mot: "lire",
+        nature: "verbe",
+        definition:
+            "Prendre connaissance d'un texte écrit.",
+        exemple:
+            "Je vais lire un livre.",
+        prononciation: "lire",
+        synonymes: [
+            "déchiffrer",
+            "consulter"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "livre",
+        nature: "nom masculin",
+        definition:
+            "Ensemble de pages imprimées ou écrites réunies en un volume.",
+        exemple:
+            "Je lis un livre intéressant.",
+        prononciation: "livre",
+        synonymes: [
+            "ouvrage"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "maison",
+        nature: "nom féminin",
+        definition:
+            "Bâtiment destiné à servir de logement.",
+        exemple:
+            "Nous sommes à la maison.",
+        prononciation: "maison",
+        synonymes: [
+            "habitation",
+            "logement"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "manger",
+        nature: "verbe",
+        definition:
+            "Prendre des aliments pour se nourrir.",
+        exemple:
+            "Nous allons manger ensemble.",
+        prononciation: "manger",
+        synonymes: [
+            "se nourrir"
+        ],
+        contraires: []
+    },
+      {
+        mot: "marcher",
+        nature: "verbe",
+        definition:
+            "Se déplacer en avançant avec les jambes.",
+        exemple:
+            "Je marche vers l'école.",
+        prononciation: "marcher",
+        synonymes: [
+            "avancer"
+        ],
+        contraires: [
+            "s'arrêter"
+        ]
+    },
+
+    {
+        mot: "mère",
+        nature: "nom féminin",
+        definition:
+            "Femme qui a donné naissance à un enfant.",
+        exemple:
+            "Ma mère prépare le repas.",
+        prononciation: "mère",
+        synonymes: [
+            "maman",
+            "parent"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "monde",
+        nature: "nom masculin",
+        definition:
+            "Ensemble de la Terre, des êtres humains ou de tout ce qui existe.",
+        exemple:
+            "Le monde est vaste.",
+        prononciation: "monde",
+        synonymes: [
+            "univers",
+            "humanité"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "mot",
+        nature: "nom masculin",
+        definition:
+            "Élément de langage constitué de lettres ou de sons ayant un sens.",
+        exemple:
+            "Je cherche ce mot dans le dictionnaire.",
+        prononciation: "mot",
+        synonymes: [
+            "terme",
+            "expression"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "nuit",
+        nature: "nom féminin",
+        definition:
+            "Période de la journée pendant laquelle il fait généralement sombre.",
+        exemple:
+            "Il travaille parfois la nuit.",
+        prononciation: "nuit",
+        synonymes: [
+            "soirée"
+        ],
+        contraires: [
+            "jour"
+        ]
+    },
+
+    {
+        mot: "objectif",
+        nature: "nom masculin",
+        definition:
+            "Résultat que l'on cherche à atteindre.",
+        exemple:
+            "Mon objectif est de réussir.",
+        prononciation: "objectif",
+        synonymes: [
+            "but",
+            "finalité"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "ordinateur",
+        nature: "nom masculin",
+        definition:
+            "Machine électronique capable de traiter et de stocker des informations.",
+        exemple:
+            "L'ordinateur permet de programmer.",
+        prononciation: "ordinateur",
+        synonymes: [
+            "machine"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "parler",
+        nature: "verbe",
+        definition:
+            "Utiliser la parole pour communiquer.",
+        exemple:
+            "Nous devons parler ensemble.",
+        prononciation: "parler",
+        synonymes: [
+            "communiquer",
+            "discuter"
+        ],
+        contraires: [
+            "se taire"
+        ]
+    },
+
+    {
+        mot: "petit",
+        nature: "adjectif",
+        definition:
+            "Qui possède une dimension réduite.",
+        exemple:
+            "J'ai un petit sac.",
+        prononciation: "petit",
+        synonymes: [
+            "minuscule",
+            "réduit"
+        ],
+        contraires: [
+            "grand"
+        ]
+    },
+
+    {
+        mot: "penser",
+        nature: "verbe",
+        definition:
+            "Former des idées ou réfléchir à quelque chose.",
+        exemple:
+            "Je pense à mon avenir.",
+        prononciation: "penser",
+        synonymes: [
+            "réfléchir",
+            "croire"
+        ],
+        contraires: []
+    },
+      {
+        mot: "perdre",
+        nature: "verbe",
+        definition:
+            "Ne plus posséder quelque chose ou subir une défaite.",
+        exemple:
+            "Il ne veut pas perdre son temps.",
+        prononciation: "perdre",
+        synonymes: [
+            "égarer",
+            "échouer"
+        ],
+        contraires: [
+            "gagner",
+            "trouver"
+        ]
+    },
+
+    {
+        mot: "père",
+        nature: "nom masculin",
+        definition:
+            "Homme qui a engendré un enfant.",
+        exemple:
+            "Mon père travaille beaucoup.",
+        prononciation: "père",
+        synonymes: [
+            "papa",
+            "parent"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "pouvoir",
+        nature: "verbe",
+        definition:
+            "Être capable de faire quelque chose.",
+        exemple:
+            "Je peux apprendre rapidement.",
+        prononciation: "pouvoir",
+        synonymes: [
+            "être capable"
+        ],
+        contraires: [
+            "être incapable"
+        ]
+    },
+
+    {
+        mot: "problème",
+        nature: "nom masculin",
+        definition:
+            "Difficulté qu'il faut résoudre.",
+        exemple:
+            "Nous devons résoudre ce problème.",
+        prononciation: "problème",
+        synonymes: [
+            "difficulté",
+            "question"
+        ],
+        contraires: [
+            "solution"
+        ]
+    },
+
+    {
+        mot: "projet",
+        nature: "nom masculin",
+        definition:
+            "Idée ou plan concernant une réalisation future.",
+        exemple:
+            "J'ai un projet informatique.",
+        prononciation: "projet",
+        synonymes: [
+            "plan",
+            "programme"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "question",
+        nature: "nom féminin",
+        definition:
+            "Phrase ou demande destinée à obtenir une information.",
+        exemple:
+            "J'ai une question.",
+        prononciation: "question",
+        synonymes: [
+            "demande",
+            "interrogation"
+        ],
+        contraires: [
+            "réponse"
+        ]
+    },
+
+    {
+        mot: "réponse",
+        nature: "nom féminin",
+        definition:
+            "Ce qui est dit ou écrit pour répondre à une question.",
+        exemple:
+            "Ta réponse est correcte.",
+        prononciation: "réponse",
+        synonymes: [
+            "solution",
+            "réaction"
+        ],
+        contraires: [
+            "question"
+        ]
+    },
+
+    {
+        mot: "réussir",
+        nature: "verbe",
+        definition:
+            "Atteindre le résultat recherché.",
+        exemple:
+            "Je veux réussir mes études.",
+        prononciation: "réussir",
+        synonymes: [
+            "accomplir",
+            "triompher"
+        ],
+        contraires: [
+            "échouer"
+        ]
+    },
+
+    {
+        mot: "savoir",
+        nature: "verbe",
+        definition:
+            "Avoir une connaissance ou être informé de quelque chose.",
+        exemple:
+            "Je sais utiliser cette application.",
+        prononciation: "savoir",
+        synonymes: [
+            "connaître"
+        ],
+        contraires: [
+            "ignorer"
+        ]
+    },
+
+    {
+        mot: "sécurité",
+        nature: "nom féminin",
+        definition:
+            "État dans lequel une personne ou une chose est protégée contre les dangers.",
+        exemple:
+            "La sécurité est importante.",
+        prononciation: "sécurité",
+        synonymes: [
+            "protection",
+            "sûreté"
+        ],
+        contraires: [
+            "danger"
+        ]
+    },
+      {
+        mot: "simple",
+        nature: "adjectif",
+        definition:
+            "Qui est facile à comprendre ou à réaliser.",
+        exemple:
+            "La solution est simple.",
+        prononciation: "simple",
+        synonymes: [
+            "facile",
+            "clair"
+        ],
+        contraires: [
+            "complexe"
+        ]
+    },
+
+    {
+        mot: "solution",
+        nature: "nom féminin",
+        definition:
+            "Moyen permettant de résoudre un problème.",
+        exemple:
+            "Nous avons trouvé une solution.",
+        prononciation: "solution",
+        synonymes: [
+            "réponse",
+            "remède"
+        ],
+        contraires: [
+            "problème"
+        ]
+    },
+
+    {
+        mot: "sourire",
+        nature: "verbe",
+        definition:
+            "Prendre une expression du visage qui manifeste souvent la joie ou la sympathie.",
+        exemple:
+            "Il aime sourire.",
+        prononciation: "sourire",
+        synonymes: [
+            "rire légèrement"
+        ],
+        contraires: [
+            "pleurer"
+        ]
+    },
+
+    {
+        mot: "temps",
+        nature: "nom masculin",
+        definition:
+            "Durée mesurable dans laquelle se produisent les événements.",
+        exemple:
+            "Je n'ai pas beaucoup de temps.",
+        prononciation: "temps",
+        synonymes: [
+            "durée",
+            "période"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "travailler",
+        nature: "verbe",
+        definition:
+            "Effectuer une activité nécessitant un effort physique ou intellectuel.",
+        exemple:
+            "Je travaille chaque jour.",
+        prononciation: "travailler",
+        synonymes: [
+            "œuvrer",
+            "agir"
+        ],
+        contraires: [
+            "se reposer"
+        ]
+    },
+
+    {
+        mot: "trouver",
+        nature: "verbe",
+        definition:
+            "Découvrir ou localiser quelque chose ou quelqu'un.",
+        exemple:
+            "J'ai trouvé la solution.",
+        prononciation: "trouver",
+        synonymes: [
+            "découvrir",
+            "localiser"
+        ],
+        contraires: [
+            "perdre"
+        ]
+    },
+
+    {
+        mot: "utiliser",
+        nature: "verbe",
+        definition:
+            "Se servir de quelque chose pour un objectif.",
+        exemple:
+            "J'utilise mon téléphone pour apprendre.",
+        prononciation: "utiliser",
+        synonymes: [
+            "employer",
+            "se servir"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "venir",
+        nature: "verbe",
+        definition:
+            "Se déplacer vers le lieu où se trouve quelqu'un ou quelque chose.",
+        exemple:
+            "Viens ici, s'il te plaît.",
+        prononciation: "venir",
+        synonymes: [
+            "arriver"
+        ],
+        contraires: [
+            "partir"
+        ]
+    },
+
+    {
+        mot: "vrai",
+        nature: "adjectif",
+        definition:
+            "Qui est conforme à la réalité ou à la vérité.",
+        exemple:
+            "C'est une information vraie.",
+        prononciation: "vrai",
+        synonymes: [
+            "exact",
+            "réel"
+        ],
+        contraires: [
+            "faux"
+        ]
+    },
+
+    {
+        mot: "voir",
+        nature: "verbe",
+        definition:
+            "Percevoir quelque chose avec les yeux.",
+        exemple:
+            "Je peux voir l'écran.",
+        prononciation: "voir",
+        synonymes: [
+            "observer",
+            "regarder"
+        ],
+        contraires: [
+            "ignorer"
+        ]
+    },
+
+    {
+        mot: "vouloir",
+        nature: "verbe",
+        definition:
+            "Avoir l'intention ou le désir de faire ou d'obtenir quelque chose.",
+        exemple:
+            "Je veux apprendre.",
+        prononciation: "vouloir",
+        synonymes: [
+            "désirer",
+            "souhaiter"
+        ],
+        contraires: [
+            "refuser"
+        ]
+    },
+
+    {
+        mot: "voyager",
+        nature: "verbe",
+        definition:
+            "Se déplacer vers un autre lieu, souvent sur une certaine distance.",
+        exemple:
+            "J'aimerais voyager dans plusieurs pays.",
+        prononciation: "voyager",
+        synonymes: [
+            "se déplacer",
+            "parcourir"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "web",
+        nature: "nom masculin",
+        definition:
+            "Ensemble de pages et de ressources accessibles sur Internet grâce au World Wide Web.",
+        exemple:
+            "Le Web permet de consulter de nombreux sites.",
+        prononciation: "web",
+        synonymes: [
+            "World Wide Web"
+        ],
+        contraires: []
+    },
+
+    {
+        mot: "ordinateur",
+        nature: "nom masculin",
+        definition:
+            "Machine électronique programmable utilisée pour traiter des informations.",
+        exemple:
+            "L'ordinateur exécute le programme.",
+        prononciation: "ordinateur",
+        synonymes: [
+            "machine"
+        ],
+        contraires: []
+    }
+
+];
+  /* =========================
+   NETTOYAGE DU DICTIONNAIRE
+========================= */
+
+function preparerDictionnaire() {
+
+    dictionnaire.sort(
+        function(a, b) {
+
+            return a.mot.localeCompare(
+                b.mot,
+                "fr",
+                {
+                    sensitivity: "base"
+                }
+            );
+
+        }
+    );
+
+    const motsVus = new Set();
+
+    for (
+        let i = dictionnaire.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const cle =
+            normaliser(
+                dictionnaire[i].mot
+            );
+
+        if (motsVus.has(cle)) {
+
+            dictionnaire.splice(
+                i,
+                1
+            );
+
+        } else {
+
+            motsVus.add(cle);
+
+        }
+
+    }
+
+}
+
+
+/* =========================
+   RECHERCHE
+========================= */
+
+function rechercherMots(texte) {
+
+    const recherche =
+        normaliser(texte);
+
+    if (!recherche) {
+        return [];
+    }
+
+    const exacts = [];
+
+    const commencements = [];
+
+    const contenus = [];
+
+    dictionnaire.forEach(
+        function(mot) {
+
+            const nom =
+                normaliser(mot.mot);
+
+            if (nom === recherche) {
+
+                exacts.push(mot);
+
+            } else if (
+                nom.startsWith(recherche)
+            ) {
+
+                commencements.push(mot);
+
+            } else if (
+                nom.includes(recherche)
+            ) {
+
+                contenus.push(mot);
+
+            }
+
+        }
+    );
+
+    return [
+        ...exacts,
+        ...commencements,
+        ...contenus
+    ];
+
+}
+
+
+/* =========================
+   RECHERCHE D'UN MOT
+========================= */
+
+function trouverMot(nom) {
+
+    const cible =
+        normaliser(nom);
+
+    return dictionnaire.find(
+        function(mot) {
+
+            return normaliser(
+                mot.mot
+            ) === cible;
+
+        }
+    ) || null;
+
+}
+
+
+/* =========================
+   AFFICHAGE DES STATISTIQUES
+========================= */
+
+function afficherStatistiques() {
+
+    const wordCount =
+        document.getElementById(
+            "wordCount"
+        );
+
+    const favoriteCount =
+        document.getElementById(
+            "favoriteCount"
+        );
+
+    const historyCount =
+        document.getElementById(
+            "historyCount"
+        );
+
+    if (wordCount) {
+
+        wordCount.textContent =
+            dictionnaire.length;
+
+    }
+
+    if (favoriteCount) {
+
+        favoriteCount.textContent =
+            favoris.length;
+
+    }
+
+    if (historyCount) {
+
+        historyCount.textContent =
+            historique.length;
+
+    }
+
+  }
+  /* =========================
+   TOAST
+========================= */
+
+function afficherToast(
+    message,
+    icon = "ℹ️"
+) {
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+    const toastIcon =
+        document.getElementById(
+            "toastIcon"
+        );
+
+    const toastMessage =
+        document.getElementById(
+            "toastMessage"
+        );
+
+    if (
+        !toast ||
+        !toastIcon ||
+        !toastMessage
+    ) {
+        return;
+    }
+
+    toastIcon.textContent =
+        icon;
+
+    toastMessage.textContent =
+        message;
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer =
+        setTimeout(
+            function() {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2500
+        );
+
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function afficherPage(
+    nomPage
+) {
+
+    const pages =
+        document.querySelectorAll(
+            ".page"
+        );
+
+    pages.forEach(
+        function(page) {
+
+            page.classList.remove(
+                "active"
+            );
+
+        }
+    );
+
+    const cible =
+        document.getElementById(
+            nomPage + "Page"
+        );
+
+    if (cible) {
+
+        cible.classList.add(
+            "active"
+        );
+
+    }
+
+    const navItems =
+        document.querySelectorAll(
+            ".nav-item"
+        );
+
+    navItems.forEach(
+        function(item) {
+
+            const page =
+                item.dataset.page;
+
+            item.classList.toggle(
+                "active",
+                page === nomPage
+            );
+
+        }
+    );
+
+    pageActuelle =
+        nomPage;
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =========================
+   LOADING
+========================= */
+
+function cacherLoading() {
+
+    const loading =
+        document.getElementById(
+            "loadingScreen"
+        );
+
+    const app =
+        document.getElementById(
+            "app"
+        );
+
+    if (loading) {
+
+        loading.classList.add(
+            "hidden"
+        );
+
+    }
+
+    if (app) {
+
+        app.classList.remove(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+/* =========================
+   THÈME
+========================= */
+
+function appliquerTheme() {
+
+    const body =
+        document.body;
+
+    const themeButton =
+        document.getElementById(
+            "themeButton"
+        );
+
+    const darkToggle =
+        document.getElementById(
+            "darkToggle"
+        );
+
+    if (theme === "dark") {
+
+        body.classList.add("dark");
+
+        if (themeButton) {
+            themeButton.textContent = "☀️";
+        }
+
+        if (darkToggle) {
+            darkToggle.classList.add("active");
+        }
+
+    } else {
+
+        body.classList.remove("dark");
+
+        if (themeButton) {
+            themeButton.textContent = "🌙";
+        }
+
+        if (darkToggle) {
+            darkToggle.classList.remove("active");
+        }
+
+    }
+
+          }
+  /* =========================
+   CHANGER LE THÈME
+========================= */
+
+function changerTheme() {
+
+    theme =
+        theme === "dark"
+            ? "light"
+            : "dark";
+
+    ecrireStockage(
+        STORAGE_KEYS.theme,
+        theme
+    );
+
+    appliquerTheme();
+
+}
+
+
+/* =========================
+   SON
+========================= */
+
+function appliquerEtatSon() {
+
+    const soundToggle =
+        document.getElementById(
+            "soundToggle"
+        );
+
+    if (!soundToggle) {
+        return;
+    }
+
+    soundToggle.classList.toggle(
+        "active",
+        sonActive
+    );
+
+}
+
+
+function changerEtatSon() {
+
+    sonActive =
+        !sonActive;
+
+    ecrireStockage(
+        STORAGE_KEYS.sound,
+        sonActive
+    );
+
+    appliquerEtatSon();
+
+    afficherToast(
+        sonActive
+            ? "Prononciation activée."
+            : "Prononciation désactivée.",
+        sonActive ? "🔊" : "🔇"
+    );
+
+}
+
+
+/* =========================
+   PRONONCER
+========================= */
+
+function prononcerMot(mot) {
+
+    if (!sonActive) {
+
+        afficherToast(
+            "La prononciation est désactivée.",
+            "🔇"
+        );
+
+        return;
+
+    }
+
+    if (
+        !(
+            "speechSynthesis"
+            in window
+        )
+    ) {
+
+        afficherToast(
+            "La prononciation n'est pas disponible.",
+            "⚠️"
+        );
+
+        return;
+
+    }
+
+    try {
+
+        window.speechSynthesis.cancel();
+
+        const utterance =
+            new SpeechSynthesisUtterance(
+                mot
+            );
+
+        utterance.lang =
+            "fr-FR";
+
+        utterance.rate =
+            0.8;
+
+        utterance.pitch =
+            1;
+
+        window.speechSynthesis.speak(
+            utterance
+        );
+
+    } catch (erreur) {
+
+        console.error(erreur);
+
+        afficherToast(
+            "Impossible de prononcer ce mot.",
+            "⚠️"
+        );
+
+    }
+
+}
+
+
+/* =========================
+   FAVORIS
+========================= */
+
+function estFavori(nom) {
+
+    const cible =
+        normaliser(nom);
+
+    return favoris.some(
+        function(item) {
+
+            return normaliser(item)
+                === cible;
+
+        }
+    );
+
+}
+
+
+function ajouterFavori(nom) {
+
+    if (!estFavori(nom)) {
+
+        favoris.push(nom);
+
+        ecrireStockage(
+            STORAGE_KEYS.favorites,
+            favoris
+        );
+
+        afficherToast(
+            "Mot ajouté aux favoris.",
+            "❤️"
+        );
+
+    }
+
+    afficherStatistiques();
+
+}
+
+
+function retirerFavori(nom) {
+
+    const cible =
+        normaliser(nom);
+
+    favoris =
+        favoris.filter(
+            function(item) {
+
+                return normaliser(item)
+                    !== cible;
+
+            }
+        );
+
+    ecrireStockage(
+        STORAGE_KEYS.favorites,
+        favoris
+    );
+
+    afficherToast(
+        "Mot retiré des favoris.",
+        "💔"
+    );
+
+    afficherStatistiques();
+
+    }
+  /* =========================
+   HISTORIQUE
+========================= */
+
+function ajouterHistorique(nom) {
+
+    const cible =
+        normaliser(nom);
+
+    historique =
+        historique.filter(
+            function(item) {
+
+                return normaliser(item.mot)
+                    !== cible;
+
+            }
+        );
+
+    historique.unshift({
+
+        mot: nom,
+
+        date: new Date()
+            .toISOString()
+
+    });
+
+    if (historique.length > 30) {
+
+        historique =
+            historique.slice(0, 30);
+
+    }
+
+    ecrireStockage(
+        STORAGE_KEYS.history,
+        historique
+    );
+
+    afficherStatistiques();
+
+}
+
+
+/* =========================
+   CARTE MOT
+========================= */
+
+function creerCarteMot(mot) {
+
+    const bouton =
+        document.createElement("button");
+
+    bouton.type =
+        "button";
+
+    bouton.className =
+        "word-card";
+
+    bouton.innerHTML = `
+
+        <div class="word-card-main">
+
+            <div class="word-card-word">
+                ${echapper(mot.mot)}
+            </div>
+
+            <div class="word-card-nature">
+                ${echapper(mot.nature)}
+            </div>
+
+            <div class="word-card-definition">
+                ${echapper(mot.definition)}
+            </div>
+
+        </div>
+
+        <div class="word-card-arrow">
+            →
+        </div>
+
+    `;
+
+    bouton.addEventListener(
+        "click",
+        function() {
+
+            ouvrirDefinition(
+                mot.mot
+            );
+
+        }
+    );
+
+    return bouton;
+
+}
+
+
+/* =========================
+   AFFICHER LES RÉSULTATS
+========================= */
+
+function afficherResultats(
+    resultats,
+    recherche = ""
+) {
+
+    const zone =
+        document.getElementById(
+            "searchResults"
+        );
+
+    const info =
+        document.getElementById(
+            "resultsInfo"
+        );
+
+    if (!zone) {
+        return;
+    }
+
+    zone.innerHTML = "";
+
+    if (info) {
+
+        info.classList.remove(
+            "hidden"
+        );
+
+        if (resultats.length === 0) {
+
+            info.textContent =
+                "Aucun résultat";
+
+        } else {
+
+            info.textContent =
+                resultats.length +
+                (
+                    resultats.length > 1
+                        ? " résultats"
+                        : " résultat"
+                ) +
+                (
+                    recherche
+                        ? ` pour « ${recherche} »`
+                        : ""
+                );
+
+        }
+
+    }
+
+    if (resultats.length === 0) {
+
+        zone.innerHTML = `
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🔎
+                </div>
+
+                <h3>
+                    Mot introuvable
+                </h3>
+
+                <p>
+                    Essaie avec une autre
+                    orthographe ou un mot
+                    différent.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+    resultats
+        .slice(0, 50)
+        .forEach(
+            function(mot) {
+
+                zone.appendChild(
+                    creerCarteMot(mot)
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================
+   RECHERCHE EN DIRECT
+========================= */
+
+function executerRecherche(
+    texte
+) {
+
+    const recherche =
+        texte.trim();
+
+    const clearButton =
+        document.getElementById(
+            "clearSearch"
+        );
+
+    if (clearButton) {
+
+        clearButton.classList.toggle(
+            "show",
+            recherche.length > 0
+        );
+
+    }
+
+    if (!recherche) {
+
+        const zone =
+            document.getElementById(
+                "searchResults"
+            );
+
+        const info =
+            document.getElementById(
+                "resultsInfo"
+            );
+
+        if (zone) {
+            zone.innerHTML = "";
+        }
+
+        if (info) {
+            info.classList.add("hidden");
+        }
+
+        return;
+
+    }
+
+    const resultats =
+        rechercherMots(recherche);
+
+    afficherResultats(
+        resultats,
+        recherche
+    );
+
+      }
+  /* =========================
+   OUVRIR UNE DÉFINITION
+========================= */
+
+function ouvrirDefinition(nom) {
+
+    const mot =
+        trouverMot(nom);
+
+    if (!mot) {
+
+        afficherToast(
+            "Ce mot n'existe pas dans JoDico.",
+            "⚠️"
+        );
+
+        return;
+
+    }
+
+    motActuel =
+        mot;
+
+    ajouterHistorique(
+        mot.mot
+    );
+
+    afficherPage(
+        "definition"
+    );
+
+    const wordElement =
+        document.getElementById(
+            "definitionWord"
+        );
+
+    const natureElement =
+        document.getElementById(
+            "definitionNature"
+        );
+
+    const content =
+        document.getElementById(
+            "definitionContent"
+        );
+
+    const actions =
+        document.getElementById(
+            "definitionActions"
+        );
+
+    if (
+        !wordElement ||
+        !natureElement ||
+        !content ||
+        !actions
+    ) {
+        return;
+    }
+
+    wordElement.textContent =
+        mot.mot;
+
+    natureElement.textContent =
+        mot.nature;
+
+    const favorite =
+        estFavori(mot.mot);
+
+    actions.innerHTML = `
+
+        <button
+            id="speakButton"
+            class="action-button primary"
+            type="button">
+
+            🔊 Prononcer
+
+        </button>
+
+        <button
+            id="favoriteButton"
+            class="action-button
+                ${favorite
+                    ? "favorite-active"
+                    : ""}"
+            type="button">
+
+            ${favorite
+                ? "❤️ Favori"
+                : "♡ Favoris"}
+
+        </button>
+
+        <button
+            id="shareButton"
+            class="action-button"
+            type="button">
+
+            📤 Partager
+
+        </button>
+
+        <button
+            id="copyButton"
+            class="action-button"
+            type="button">
+
+            📋 Copier
+
+        </button>
+
+    `;
+
+    content.innerHTML = `
+
+        <div class="definition-section">
+
+            <h3>
+                📖 Définition
+            </h3>
+
+            <p>
+                ${echapper(mot.definition)}
+            </p>
+
+        </div>
+
+
+        <div class="definition-section">
+
+            <h3>
+                💬 Exemple
+            </h3>
+
+            <div class="example-box">
+                ${echapper(mot.exemple)}
+            </div>
+
+        </div>
+
+
+        <div class="definition-section">
+
+            <h3>
+                🏷️ Nature grammaticale
+            </h3>
+
+            <div class="tags">
+
+                <span class="tag">
+                    ${echapper(mot.nature)}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="definition-section">
+
+            <h3>
+                🔗 Synonymes
+            </h3>
+
+            <div class="tags">
+
+                ${
+                    mot.synonymes.length
+                    ? mot.synonymes
+                        .map(
+                            function(item) {
+                                return `
+                                    <span class="tag">
+                                        ${echapper(item)}
+                                    </span>
+                                `;
+                            }
+                        )
+                        .join("")
+                    : `
+                        <span class="tag">
+                            Aucun renseigné
+                        </span>
+                    `
+                }
+
+            </div>
+
+        </div>
+
+
+        <div class="definition-section">
+
+            <h3>
+                ↔️ Contraires
+            </h3>
+
+            <div class="tags">
+
+                ${
+                    mot.contraires.length
+                    ? mot.contraires
+                        .map(
+                            function(item) {
+                                return `
+                                    <span class="tag">
+                                        ${echapper(item)}
+                                    </span>
+                                `;
+                            }
+                        )
+                        .join("")
+                    : `
+                        <span class="tag">
+                            Aucun renseigné
+                        </span>
+                    `
+                }
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    const speakButton =
+        document.getElementById(
+            "speakButton"
+        );
+
+    const favoriteButton =
+        document.getElementById(
+            "favoriteButton"
+        );
+
+    const shareButton =
+        document.getElementById(
+            "shareButton"
+        );
+
+    const copyButton =
+        document.getElementById(
+            "copyButton"
+        );
+
+
+    if (speakButton) {
+
+        speakButton.addEventListener(
+            "click",
+            function() {
+
+                prononcerMot(
+                    mot.mot
+                );
+
+            }
+        );
+
+    }
+
+
+    if (favoriteButton) {
+
+        favoriteButton.addEventListener(
+            "click",
+            function() {
+
+                if (
+                    estFavori(mot.mot)
+                ) {
+
+                    retirerFavori(
+                        mot.mot
+                    );
+
+                } else {
+
+                    ajouterFavori(
+                        mot.mot
+                    );
+
+                }
+
+                ouvrirDefinition(
+                    mot.mot
+                );
+
+            }
+        );
+
+          }
+      if (shareButton) {
+
+        shareButton.addEventListener(
+            "click",
+            function() {
+
+                partagerMot(mot);
+
+            }
+        );
+
+    }
+
+
+    if (copyButton) {
+
+        copyButton.addEventListener(
+            "click",
+            function() {
+
+                copierDefinition(
+                    mot
+                );
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =========================
+   COPIER
+========================= */
+
+function copierTexte(texte) {
+
+    if (
+        navigator.clipboard &&
+        navigator.clipboard.writeText
+    ) {
+
+        navigator.clipboard
+            .writeText(texte)
+            .then(
+                function() {
+
+                    afficherToast(
+                        "Texte copié.",
+                        "📋"
+                    );
+
+                }
+            )
+            .catch(
+                function() {
+
+                    ancienneMethodeCopie(
+                        texte
+                    );
+
+                }
+            );
+
+    } else {
+
+        ancienneMethodeCopie(
+            texte
+        );
+
+    }
+
+}
+
+
+function ancienneMethodeCopie(
+    texte
+) {
+
+    const textarea =
+        document.createElement(
+            "textarea"
+        );
+
+    textarea.value =
+        texte;
+
+    textarea.style.position =
+        "fixed";
+
+    textarea.style.opacity =
+        "0";
+
+    document.body.appendChild(
+        textarea
+    );
+
+    textarea.select();
+
+    try {
+
+        document.execCommand(
+            "copy"
+        );
+
+        afficherToast(
+            "Texte copié.",
+            "📋"
+        );
+
+    } catch (erreur) {
+
+        afficherToast(
+            "Impossible de copier.",
+            "⚠️"
+        );
+
+    }
+
+    document.body.removeChild(
+        textarea
+    );
+
+}
+
+
+function copierDefinition(mot) {
+
+    const texte =
+        `${mot.mot}
+
+${mot.nature}
+
+${mot.definition}
+
+Exemple :
+${mot.exemple}`;
+
+    copierTexte(
+        texte
+    );
+
+}
+
+
+/* =========================
+   PARTAGER
+========================= */
+
+function partagerMot(mot) {
+
+    const texte =
+        `${mot.mot} — ${mot.definition}`;
+
+    if (
+        navigator.share
+    ) {
+
+        navigator.share({
+
+            title:
+                "JoDico — " +
+                mot.mot,
+
+            text:
+                texte
+
+        }).catch(
+            function() {
+
+                // L'utilisateur
+                // peut annuler
+                // le partage.
+
+            }
+        );
+
+    } else {
+
+        copierTexte(
+            texte
+        );
+
+        afficherToast(
+            "Partage non disponible : définition copiée.",
+            "📋"
+        );
+
+    }
+
+}
+
+
+/* =========================
+   MOT DU JOUR
+========================= */
+
+function obtenirMotDuJour() {
+
+    if (
+        dictionnaire.length === 0
+    ) {
+        return null;
+    }
+
+    const maintenant =
+        new Date();
+
+    const nombre =
+        maintenant.getFullYear() *
+        10000 +
+        (maintenant.getMonth() + 1) *
+        100 +
+        maintenant.getDate();
+
+    const index =
+        Math.abs(
+            nombre
+        ) %
+        dictionnaire.length;
+
+    return dictionnaire[index];
+
+}
+
+
+function afficherMotDuJour() {
+
+    const mot =
+        obtenirMotDuJour();
+
+    if (!mot) {
+        return;
+    }
+
+    const text =
+        document.getElementById(
+            "dailyWordText"
+        );
+
+    const nature =
+        document.getElementById(
+            "dailyWordNature"
+        );
+
+    const definition =
+        document.getElementById(
+            "dailyWordDefinition"
+        );
+
+    if (text) {
+        text.textContent =
+            mot.mot;
+    }
+
+    if (nature) {
+        nature.textContent =
+            mot.nature;
+    }
+
+    if (definition) {
+        definition.textContent =
+            mot.definition;
+    }
+
+}
+
+
+/* =========================
+   MOT ALÉATOIRE
+========================= */
+
+function afficherMotAleatoire() {
+
+    if (
+        dictionnaire.length === 0
+    ) {
+        return;
+    }
+
+    const index =
+        Math.floor(
+            Math.random() *
+            dictionnaire.length
+        );
+
+    const mot =
+        dictionnaire[index];
+
+    ouvrirDefinition(
+        mot.mot
+    );
+
+          }
+  /* =========================
+   FAVORIS
+========================= */
+
+function afficherFavoris() {
+
+    const zone =
+        document.getElementById(
+            "favoritesList"
+        );
+
+    if (!zone) {
+        return;
+    }
+
+    zone.innerHTML = "";
+
+    if (favoris.length === 0) {
+
+        zone.innerHTML = `
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ❤️
+                </div>
+
+                <h3>
+                    Aucun favori
+                </h3>
+
+                <p>
+                    Ajoute des mots à tes
+                    favoris pour les retrouver
+                    facilement ici.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+    const mots = [];
+
+    favoris.forEach(
+        function(nom) {
+
+            const mot =
+                trouverMot(nom);
+
+            if (mot) {
+                mots.push(mot);
+            }
+
+        }
+    );
+
+    mots.forEach(
+        function(mot) {
+
+            zone.appendChild(
+                creerCarteMot(mot)
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   HISTORIQUE
+========================= */
+
+function formaterDate(
+    valeur
+) {
+
+    try {
+
+        const date =
+            new Date(valeur);
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return "";
+
+        }
+
+        return date.toLocaleString(
+            "fr-FR",
+            {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
+
+    } catch (erreur) {
+
+        return "";
+
+    }
+
+}
+
+
+function afficherHistorique() {
+
+    const zone =
+        document.getElementById(
+            "historyList"
+        );
+
+    if (!zone) {
+        return;
+    }
+
+    zone.innerHTML = "";
+
+    if (historique.length === 0) {
+
+        zone.innerHTML = `
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🕘
+                </div>
+
+                <h3>
+                    Historique vide
+                </h3>
+
+                <p>
+                    Tes recherches apparaîtront
+                    ici automatiquement.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+    historique.forEach(
+        function(element) {
+
+            const mot =
+                trouverMot(
+                    element.mot
+                );
+
+            if (!mot) {
+                return;
+            }
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "history-item";
+
+            item.innerHTML = `
+
+                <div class="history-main">
+
+                    <div class="history-word">
+                        ${echapper(mot.mot)}
+                    </div>
+
+                    <div class="history-date">
+                        ${echapper(
+                            formaterDate(
+                                element.date
+                            )
+                        )}
+                    </div>
+
+                </div>
+
+                <button
+                    class="small-button"
+                    type="button">
+
+                    Ouvrir
+
+                </button>
+
+            `;
+
+            const button =
+                item.querySelector(
+                    "button"
+                );
+
+            if (button) {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        ouvrirDefinition(
+                            mot.mot
+                        );
+
+                    }
+                );
+
+            }
+
+            zone.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   EFFACER HISTORIQUE
+========================= */
+
+function effacerHistorique() {
+
+    if (
+        historique.length === 0
+    ) {
+
+        afficherToast(
+            "L'historique est déjà vide.",
+            "ℹ️"
+        );
+
+        return;
+
+    }
+
+    const confirmer =
+        window.confirm(
+            "Voulez-vous vraiment effacer tout l'historique ?"
+        );
+
+    if (!confirmer) {
+        return;
+    }
+
+    historique = [];
+
+    ecrireStockage(
+        STORAGE_KEYS.history,
+        historique
+    );
+
+    afficherHistorique();
+
+    afficherStatistiques();
+
+    afficherToast(
+        "Historique effacé.",
+        "🗑️"
+    );
+
+                          }
+  /* =========================
+   ALPHABET
+========================= */
+
+const alphabet =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+
+function afficherAlphabet() {
+
+    const grid =
+        document.getElementById(
+            "alphabetGrid"
+        );
+
+    if (!grid) {
+        return;
+    }
+
+    grid.innerHTML = "";
+
+    alphabet.forEach(
+        function(lettre) {
+
+            const bouton =
+                document.createElement(
+                    "button"
+                );
+
+            bouton.type =
+                "button";
+
+            bouton.className =
+                "letter-button";
+
+            bouton.textContent =
+                lettre;
+
+            bouton.addEventListener(
+                "click",
+                function() {
+
+                    afficherMotsParLettre(
+                        lettre
+                    );
+
+                    document
+                        .querySelectorAll(
+                            ".letter-button"
+                        )
+                        .forEach(
+                            function(item) {
+
+                                item.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+                    bouton.classList.add(
+                        "active"
+                    );
+
+                }
+            );
+
+            grid.appendChild(
+                bouton
+            );
+
+        }
+    );
+
+}
+
+
+function afficherMotsParLettre(
+    lettre
+) {
+
+    const title =
+        document.getElementById(
+            "letterTitle"
+        );
+
+    const zone =
+        document.getElementById(
+            "letterWords"
+        );
+
+    if (!zone) {
+        return;
+    }
+
+    const cible =
+        normaliser(lettre);
+
+    const mots =
+        dictionnaire.filter(
+            function(mot) {
+
+                return normaliser(
+                    mot.mot
+                ).startsWith(
+                    cible
+                );
+
+            }
+        );
+
+    if (title) {
+
+        title.textContent =
+            "Mots commençant par " +
+            lettre;
+
+    }
+
+    zone.innerHTML = "";
+
+    if (mots.length === 0) {
+
+        zone.innerHTML = `
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    📚
+                </div>
+
+                <h3>
+                    Aucun mot
+                </h3>
+
+                <p>
+                    Aucun mot de JoDico ne
+                    commence actuellement
+                    par cette lettre.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+    mots.forEach(
+        function(mot) {
+
+            zone.appendChild(
+                creerCarteMot(mot)
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   MANIFEST PWA
+========================= */
+
+function initialiserManifest() {
+
+    const manifest =
+        {
+
+            name:
+                "JoDico",
+
+            short_name:
+                "JoDico",
+
+            description:
+                "Dictionnaire français hors connexion",
+
+            start_url:
+                "./",
+
+            display:
+                "standalone",
+
+            background_color:
+                "#f6f7fb",
+
+            theme_color:
+                "#4f46e5",
+
+            lang:
+                "fr",
+
+            icons: []
+
+        };
+
+
+    try {
+
+        const contenu =
+            JSON.stringify(
+                manifest
+            );
+
+        const blob =
+            new Blob(
+                [contenu],
+                {
+                    type:
+                        "application/json"
+                }
+            );
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        const link =
+            document.createElement(
+                "link"
+            );
+
+        link.rel =
+            "manifest";
+
+        link.href =
+            url;
+
+        document.head.appendChild(
+            link
+        );
+
+    } catch (erreur) {
+
+        console.warn(
+            "Manifest dynamique non disponible.",
+            erreur
+        );
+
+    }
+
+      }
+  /* =========================
+   RÉINITIALISATION
+========================= */
+
+function reinitialiserDonnees() {
+
+    const confirmer =
+        window.confirm(
+            "Cette action va supprimer tes favoris, ton historique et tes préférences. Continuer ?"
+        );
+
+    if (!confirmer) {
+        return;
+    }
+
+    favoris = [];
+
+    historique = [];
+
+    theme = "light";
+
+    sonActive = true;
+
+    ecrireStockage(
+        STORAGE_KEYS.favorites,
+        favoris
+    );
+
+    ecrireStockage(
+        STORAGE_KEYS.history,
+        historique
+    );
+
+    ecrireStockage(
+        STORAGE_KEYS.theme,
+        theme
+    );
+
+    ecrireStockage(
+        STORAGE_KEYS.sound,
+        sonActive
+    );
+
+    appliquerTheme();
+
+    appliquerEtatSon();
+
+    afficherFavoris();
+
+    afficherHistorique();
+
+    afficherStatistiques();
+
+    afficherToast(
+        "Les données ont été réinitialisées.",
+        "🗑️"
+    );
+
+}
+
+
+/* =========================
+   ÉVÉNEMENTS
+========================= */
+
+function initialiserEvenements() {
+
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
+    const clearSearch =
+        document.getElementById(
+            "clearSearch"
+        );
+
+    const themeButton =
+        document.getElementById(
+            "themeButton"
+        );
+
+    const darkToggle =
+        document.getElementById(
+            "darkToggle"
+        );
+
+    const soundToggle =
+        document.getElementById(
+            "soundToggle"
+        );
+
+    const randomButton =
+        document.getElementById(
+            "randomWordButton"
+        );
+
+    const dailyOpenButton =
+        document.getElementById(
+            "dailyOpenButton"
+        );
+
+    const clearHistoryButton =
+        document.getElementById(
+            "clearHistoryButton"
+        );
+
+    const resetButton =
+        document.getElementById(
+            "resetButton"
+        );
+
+    const backDefinition =
+        document.getElementById(
+            "backFromDefinition"
+        );
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            function() {
+
+                executerRecherche(
+                    searchInput.value
+                );
+
+            }
+        );
+
+    }
+
+
+    if (clearSearch) {
+
+        clearSearch.addEventListener(
+            "click",
+            function() {
+
+                if (searchInput) {
+
+                    searchInput.value =
+                        "";
+
+                    searchInput.focus();
+
+                }
+
+                executerRecherche("");
+
+            }
+        );
+
+    }
+
+
+    if (themeButton) {
+
+        themeButton.addEventListener(
+            "click",
+            changerTheme
+        );
+
+    }
+
+
+    if (darkToggle) {
+
+        darkToggle.addEventListener(
+            "click",
+            changerTheme
+        );
+
+    }
+
+
+    if (soundToggle) {
+
+        soundToggle.addEventListener(
+            "click",
+            changerEtatSon
+        );
+
+    }
+
+
+    if (randomButton) {
+
+        randomButton.addEventListener(
+            "click",
+            afficherMotAleatoire
+        );
+
+    }
+
+
+    if (dailyOpenButton) {
+
+        dailyOpenButton.addEventListener(
+            "click",
+            function() {
+
+                const mot =
+                    obtenirMotDuJour();
+
+                if (mot) {
+
+                    ouvrirDefinition(
+                        mot.mot
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    if (clearHistoryButton) {
+
+        clearHistoryButton.addEventListener(
+            "click",
+            effacerHistorique
+        );
+
+    }
+
+
+    if (resetButton) {
+
+        resetButton.addEventListener(
+            "click",
+            reinitialiserDonnees
+        );
+
+    }
+
+
+    if (backDefinition) {
+
+        backDefinition.addEventListener(
+            "click",
+            function() {
+
+                afficherPage(
+                    "home"
+                );
+
+            }
+        );
+
+    }
+
+
+    /* Navigation */
+
+    document
+        .querySelectorAll(
+            ".nav-item"
+        )
+        .forEach(
+            function(item) {
+
+                item.addEventListener(
+                    "click",
+                    function() {
+
+                        const page =
+                            item.dataset.page;
+
+                        if (page) {
+
+                            afficherPage(
+                                page
+                            );
+
+                            if (
+                                page ===
+                                "favorites"
+                            ) {
+
+                                afficherFavoris();
+
+                            }
+
+                            if (
+                                page ===
+                                "history"
+                            ) {
+
+                                afficherHistorique();
+
+                            }
+
+                            if (
+                                page ===
+                                "letters"
+                            ) {
+
+                                afficherAlphabet();
+
+                            }
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* Cartes rapides */
+
+    document
+        .querySelectorAll(
+            ".quick-card"
+        )
+        .forEach(
+            function(card) {
+
+                card.addEventListener(
+                    "click",
+                    function() {
+
+                        const page =
+                            card.dataset.page;
+
+                        if (!page) {
+                            return;
+                        }
+
+                        afficherPage(
+                            page
+                        );
+
+                        if (
+                            page ===
+                            "favorites"
+                        ) {
+
+                            afficherFavoris();
+
+                        }
+
+                        if (
+                            page ===
+                            "history"
+                        ) {
+
+                            afficherHistorique();
+
+                        }
+
+                        if (
+                            page ===
+                            "letters"
+                        ) {
+
+                            afficherAlphabet();
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* Boutons accueil */
+
+    const homeFavorites =
+        document.getElementById(
+            "goHomeFromFavorites"
+        );
+
+    if (homeFavorites) {
+
+        homeFavorites.addEventListener(
+            "click",
+            function() {
+
+                afficherPage(
+                    "home"
+                );
+
+            }
+        );
+
+    }
+
+
+    /* Retour en haut */
+
+    const scrollButton =
+        document.getElementById(
+            "scrollTopButton"
+        );
+
+    if (scrollButton) {
+
+        scrollButton.addEventListener(
+            "click",
+            function() {
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+
+            }
+        );
+
+    }
+
+
+    window.addEventListener(
+        "scroll",
+        function() {
+
+            if (!scrollButton) {
+                return;
+            }
+
+            scrollButton.classList.toggle(
+                "show",
+                window.scrollY > 400
+            );
+
+        }
+    );
+
+  }
+  /* =========================
+   DÉMARRAGE JO DICO
+========================= */
+
+function demarrerJoDico() {
+
+    try {
+
+        preparerDictionnaire();
+
+        appliquerTheme();
+
+        appliquerEtatSon();
+
+        initialiserManifest();
+
+        afficherStatistiques();
+
+        afficherMotDuJour();
+
+        initialiserEvenements();
+
+        afficherPage(
+            "home"
+        );
+
+        cacherLoading();
+
+        console.log(
+            "JoDico " +
+            JODICO_VERSION +
+            " est démarré."
+        );
+
+    } catch (erreur) {
+
+        console.error(
+            "Erreur JoDico :",
+            erreur
+        );
+
+        /*
+         * Même en cas d'erreur,
+         * on ne laisse pas l'écran
+         * de chargement bloqué.
+         */
+
+        cacherLoading();
+
+        afficherToast(
+            "JoDico a rencontré une erreur.",
+            "⚠️"
+        );
+
+    }
+
+}
+
+
+/* =========================
+   ERREUR GLOBALE
+========================= */
+
+window.addEventListener(
+    "error",
+    function(e) {
+
+        console.error(
+            "Erreur JoDico :",
+            e.error || e.message
+        );
+
+        cacherLoading();
+
+    }
+);
+
+
+/* =========================
+   DÉMARRAGE APRÈS LE DOM
+========================= */
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        demarrerJoDico
+    );
+
+} else {
+
+    demarrerJoDico();
+
+}
+
+</script>
+
+</body>
+</html>

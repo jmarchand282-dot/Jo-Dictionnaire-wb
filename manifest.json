@@ -1,39 +1,37 @@
 {
   "name": "JoDico",
   "short_name": "JoDico",
-  "description": "Dictionnaire anglais-français pour apprendre, traduire et pratiquer.",
-  "id": "/Jo-Dictionnaire-wb/",
-  "start_url": "/Jo-Dictionnaire-wb/",
-  "scope": "/Jo-Dictionnaire-wb/",
+  "description": "Dictionnaire français rapide, simple et hors ligne.",
+  "lang": "fr-FR",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "display_override": [
-    "window-controls-overlay",
-    "standalone"
-  ],
   "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#4f46e5",
-  "lang": "fr",
-  "dir": "ltr",
-
-  "icons": [
-    {
-      "src": "icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    }
-  ],
-
+  "background_color": "#f7f8fc",
+  "theme_color": "#5b4bff",
   "categories": [
     "education",
     "books",
     "reference"
+  ],
+  "icons": [
+    {
+      "src": "./icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
